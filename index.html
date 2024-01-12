@@ -1,0 +1,80 @@
+<!-- https://huggingface.co/Supabase/gte-small -->
+<!-- this just runs the model without a web worker. not recommended since page will freeze when running inference -->
+<!-- <script type="module">
+
+    import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.5.0';
+    
+    const pipe = await pipeline(
+      'feature-extraction',
+      'Supabase/gte-small',
+    );
+    
+    // Generate the embedding from text
+    const output = await pipe('Hello world', {
+      pooling: 'mean',
+      normalize: true,
+    });
+    
+    // Extract the embedding output
+    const embedding = Array.from(output.data);
+    
+    console.log(embedding);
+    
+    </script>
+     -->
+     <html>
+        <head>
+            <title>Web Worker Example</title>
+        </head>
+        <body>
+            <h1>Web Worker Example</h1>
+           <form id="text-form">
+            <textarea id="text-input" required></textarea>
+            <input type="file" id="file-input" accept=".txt">
+            <button type="submit">Submit</button>
+        </form>
+        
+        <form id="query-form" style="display: none;">
+            <input type="text" id="query-input" required>
+            <button type="submit">Query</button>
+        </form>
+
+        <div id="most-similar-sentences"></div>
+        
+        <script type="module">
+            const worker = new Worker('./dist/worker.bundle.js');
+            const mostSimDiv = document.getElementById('most-similar-sentences');
+        
+            document.getElementById('text-form').addEventListener('submit', async event => {
+                event.preventDefault();
+                mostSimDiv.innerText = ''
+        
+                let text;
+                const file = document.getElementById('file-input').files[0];
+                if (file) {
+                    text = await file.text();
+                } else {
+                    text = document.getElementById('text-input').value;
+                }
+        
+                worker.postMessage({ type: 'text', text });
+                document.getElementById('query-form').style.display = 'block';
+            });
+        
+            document.getElementById('query-form').addEventListener('submit', event => {
+                event.preventDefault();
+                mostSimDiv.innerText = 'thinking...';
+                
+        
+                const query = document.getElementById('query-input').value;
+                worker.postMessage({ type: 'query', query });
+            });
+        
+            worker.onmessage = function(event) {
+                console.log(event.data);
+                mostSimDiv.innerText = event.data.join('\n');
+
+            };
+        </script>
+        </body>
+        </html>
