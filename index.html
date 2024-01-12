@@ -1,45 +1,26 @@
 <!-- https://huggingface.co/Supabase/gte-small -->
-<!-- this just runs the model without a web worker. not recommended since page will freeze when running inference -->
-<!-- <script type="module">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen py-2">
+    <h1 class="text-3xl font-bold mb-4">Web Worker vectorDB Example</h1>
+    <form id="text-form" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <textarea id="text-input" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"></textarea>
+        <input type="file" id="file-input" accept=".txt" class="mt-4">
+        <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Submit</button>
+    </form>
+    
+    <form id="query-form" style="display: none;" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <input type="text" id="query-input" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        <button type="submit" class="mt-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Query</button>
+    </form>
 
-    import { pipeline } from 'https://cdn.jsdelivr.net/npm/@xenova/transformers@2.5.0';
-    
-    const pipe = await pipeline(
-      'feature-extraction',
-      'Supabase/gte-small',
-    );
-    
-    // Generate the embedding from text
-    const output = await pipe('Hello world', {
-      pooling: 'mean',
-      normalize: true,
-    });
-    
-    // Extract the embedding output
-    const embedding = Array.from(output.data);
-    
-    console.log(embedding);
-    
-    </script>
-     -->
-     <html>
-        <head>
-            <title>Web Worker Example</title>
-        </head>
-        <body>
-            <h1>Web Worker Example</h1>
-           <form id="text-form">
-            <textarea id="text-input" required></textarea>
-            <input type="file" id="file-input" accept=".txt">
-            <button type="submit">Submit</button>
-        </form>
-        
-        <form id="query-form" style="display: none;">
-            <input type="text" id="query-input" required>
-            <button type="submit">Query</button>
-        </form>
-
-        <div id="most-similar-sentences"></div>
+    <div id="most-similar-sentences" class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4"></div>
         
         <script type="module">
             const worker = new Worker('./dist/worker.bundle.js');
